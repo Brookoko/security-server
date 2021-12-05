@@ -3,6 +3,7 @@ namespace Security.Server
     using System;
     using Areas.Identity;
     using Data;
+    using Hashing;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,8 @@ namespace Security.Server
 
             services.AddScoped<AuthenticationStateProvider,
                 RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+            services.AddScoped<IPasswordHasher<IdentityUser>, ArgonPasswordHasher<IdentityUser>>();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
