@@ -31,4 +31,4 @@
 _UpgradeReport_Files/
 [Pp]ackages/
 
-assets
+**/launchSettings.json
