@@ -1,7 +1,8 @@
 @page
 @using Microsoft.AspNetCore.Identity
+@using Security.Server.Data
 @attribute [IgnoreAntiforgeryToken]
-@inject SignInManager<IdentityUser> SignInManager
+@inject SignInManager<ApplicationUser> SignInManager
 
 @functions {
 

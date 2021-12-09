@@ -1,11 +1,15 @@
 namespace Security.Server
 {
     using System;
+    using System.IO;
     using Areas.Identity;
     using Data;
     using Hashing;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Components.Authorization;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+    using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.EntityFrameworkCore;
@@ -29,12 +33,22 @@ namespace Security.Server
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<ApplicationUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserStore<UserStore>();
 
             services.AddScoped<AuthenticationStateProvider,
-                RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+                RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
 
-            services.AddScoped<IPasswordHasher<IdentityUser>, ArgonPasswordHasher<IdentityUser>>();
+            services.AddScoped<IPasswordHasher<ApplicationUser>, ArgonPasswordHasher<ApplicationUser>>();
+
+            var configuration = new AuthenticatedEncryptorConfiguration
+            {
+                EncryptionAlgorithm = EncryptionAlgorithm.AES_256_GCM,
+            };
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(@"c:\keys\"))
+                .UseCryptographicAlgorithms(configuration);
 
             services.AddRazorPages();
             services.AddServerSideBlazor();

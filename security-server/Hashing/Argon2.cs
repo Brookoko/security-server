@@ -19,7 +19,6 @@ namespace Security.Server.Hashing
             }
 
             var str = Encoding.UTF8.GetString(hash.Where(b => b != 0).ToArray());
-            Console.WriteLine($"{str}");
             return str;
         }
 
