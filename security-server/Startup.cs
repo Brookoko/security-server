@@ -44,7 +44,7 @@ namespace Security.Server
 
             var configuration = new AuthenticatedEncryptorConfiguration
             {
-                EncryptionAlgorithm = EncryptionAlgorithm.AES_256_GCM,
+                EncryptionAlgorithm = EncryptionAlgorithm.AES_128_GCM,
             };
             services.AddDataProtection()
                 .PersistKeysToFileSystem(new DirectoryInfo(@"c:\keys\"))
