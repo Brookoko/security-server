@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace Security.Server
 {
+    using System.Security.Authentication;
+
     public class Program
     {
         public static void Main(string[] args)
@@ -13,7 +15,17 @@ namespace Security.Server
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureKestrel(k =>
+                    {
+                        k.ConfigureHttpsDefaults(h =>
+                        {
+                            h.SslProtocols = SslProtocols.Tls12;
+                        });
+                    });
+                });
         }
     }
 }
