@@ -10,7 +10,7 @@ using Security.Server.Data;
 namespace security_server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211209191940_ApplicationDbMigration")]
+    [Migration("20211211011350_ApplicationDbMigration")]
     partial class ApplicationDbMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -190,9 +190,6 @@ namespace security_server.Data.Migrations
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
-
-                    b.Property<byte[]>("PhoneEncrypted")
-                        .HasColumnType("bytea");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");

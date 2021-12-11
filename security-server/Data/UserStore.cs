@@ -9,7 +9,7 @@ namespace Security.Server.Data
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-    public class UserStore : UserOnlyStore<ApplicationUser>
+    public class UserStore<TUser> : UserOnlyStore<TUser> where TUser : IdentityUser, new()
     {
         private readonly IKeyManager keyManager;
 
@@ -20,21 +20,22 @@ namespace Security.Server.Data
             this.keyManager = keyManager;
         }
 
-        public override async Task<string> GetPhoneNumberAsync(ApplicationUser user,
+        public override async Task<string> GetPhoneNumberAsync(TUser user,
             CancellationToken cancellationToken = new())
         {
-            var phoneBytes = user.PhoneEncrypted;
-            if (phoneBytes == null || phoneBytes.Length == 0)
+            var phoneNumber = await base.GetPhoneNumberAsync(user, cancellationToken);
+            if (string.IsNullOrEmpty(phoneNumber))
             {
-                return "";
+                return phoneNumber;
             }
             var key = GetKey();
             var encryptor = key.CreateEncryptor();
+            var phoneBytes = GetBytes(phoneNumber);
             var phoneNumberBytes = encryptor.Decrypt(phoneBytes, ArraySegment<byte>.Empty);
             return Encoding.UTF8.GetString(phoneNumberBytes);
         }
 
-        public override async Task SetPhoneNumberAsync(ApplicationUser user, string phoneNumber,
+        public override async Task SetPhoneNumberAsync(TUser user, string phoneNumber,
             CancellationToken cancellationToken = new())
         {
             if (string.IsNullOrEmpty(phoneNumber))
@@ -46,12 +47,26 @@ namespace Security.Server.Data
             var encryptor = key.CreateEncryptor();
             var data = Encoding.UTF8.GetBytes(phoneNumber);
             var phoneNumberBytes = encryptor.Encrypt(data, ArraySegment<byte>.Empty);
-            user.PhoneEncrypted = phoneNumberBytes;
+            var encryptedPhoneNumber = GetString(phoneNumberBytes);
+            await base.SetPhoneNumberAsync(user, encryptedPhoneNumber, cancellationToken);
         }
 
         private IKey GetKey()
         {
             return keyManager.GetAllKeys().First();
+        }
+
+        private byte[] GetBytes(string text)
+        {
+            return Enumerable.Range(0, text.Length)
+                .Where(x => x % 2 == 0)
+                .Select(x => Convert.ToByte(text.Substring(x, 2), 16))
+                .ToArray();
+        }
+
+        private string GetString(byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace("-", "");
         }
     }
 }

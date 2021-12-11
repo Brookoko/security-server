@@ -189,9 +189,6 @@ namespace security_server.Data.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("PhoneEncrypted")
-                        .HasColumnType("bytea");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 

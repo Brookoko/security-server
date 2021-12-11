@@ -4,6 +4,5 @@ namespace Security.Server.Data
 
     public class ApplicationUser : IdentityUser
     {
-        public byte[] PhoneEncrypted { get; set; }
     }
 }

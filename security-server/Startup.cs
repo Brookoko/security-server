@@ -35,7 +35,7 @@ namespace Security.Server
 
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddUserStore<UserStore>();
+                .AddUserStore<UserStore<ApplicationUser>>();
 
             services.AddScoped<AuthenticationStateProvider,
                 RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
